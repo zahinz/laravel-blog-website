@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['guest']);
+    }
+
     public function index() {
 
         return view('auth.login');
@@ -15,6 +20,8 @@ class LoginController extends Controller
 
     public function store(Request $request) {
 
+        // dd($request->remember);
+
         // *1 validate the user input and display $message error when the input in not meet the requirements below
         $this->validate($request, [
             'email' => 'required|email',
@@ -22,7 +29,7 @@ class LoginController extends Controller
         ]);
 
         // *2 sign in the user
-        if(!auth()->attempt($request->only('email', 'password'))) {
+        if(!auth()->attempt($request->only('email', 'password'), $request->remember)) {
             return back()->with('status', 'Invalid login details');
         }
 
